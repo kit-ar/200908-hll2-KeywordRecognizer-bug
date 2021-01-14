@@ -231,6 +231,7 @@ PlayerSettings:
   metalEditorSupport: 1
   metalAPIValidation: 1
   iOSRenderExtraFrameOnPause: 0
+  iosCopyPluginsCodeInsteadOfSymlink: 0
   appleDeveloperTeamID: 
   iOSManualSigningProvisioningProfileID: 
   tvOSManualSigningProvisioningProfileID: 
@@ -592,14 +593,15 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Template3D
+  metroPackageName: KeywordRecognizerBug
   metroPackageVersion: 1.0.0.0
   metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
   metroCertificateSubject: DefaultCompany
   metroCertificateIssuer: DefaultCompany
   metroCertificateNotAfter: 8032f121daa4d701
-  metroApplicationDescription: Template_3D
+  metroApplicationDescription: KeywordRecognizerBug is reproducing an issue where
+    voice commands stop being recognized after minimizing/restoring the app
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0

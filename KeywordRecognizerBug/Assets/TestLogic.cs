@@ -8,7 +8,9 @@ using UnityEngine.Windows.Speech;
 
 public class TestLogic : MonoBehaviour
 {
-    KeywordRecognizer keywordRecognizer;
+    KeywordRecognizer _keywordRecognizer;
+
+    List<string> _keywords = new List<string>() { "Test Voice Command", "Test Other" };
 
     void Start()
     {
@@ -42,19 +44,43 @@ public class TestLogic : MonoBehaviour
         Debug.Log("Starting test in 2s...");
         yield return new WaitForSeconds(2);
 
-        List<string> _keywords = new List<string>() { "Test Voice Command", "Test Other" }; 
-
         Debug.Log("Initializing KeywordRecognizer and registering voice commands: 'Test Voice Command' & 'Test Other'");
 
+        PhraseRecognitionSystem.OnStatusChanged += StatusHandler;
+
         // Tell the KeywordRecognizer about our keywords.
-        keywordRecognizer = new KeywordRecognizer(_keywords.ToArray());
+        _keywordRecognizer = new KeywordRecognizer(_keywords.ToArray());
 
         // Register a callback for the KeywordRecognizer and start recognizing!
-        keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
+        _keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
 
-        keywordRecognizer.Start();
+        _keywordRecognizer.Start();
 
         Debug.Log("Started recognition. Waiting forever, just say 'Test Voice Command' or 'Test Other' and check that the recognition message appears.");
+    }
+
+    private void StatusHandler(SpeechSystemStatus status)
+    {
+        Debug.Log("SPEECH API STATUS CHANGED: " + status);
+
+        if(status != SpeechSystemStatus.Running)
+        {
+            RebindVoiceCommands();
+        }
+    }
+
+    private void RebindVoiceCommands()
+    {
+        _keywordRecognizer.OnPhraseRecognized -= KeywordRecognizer_OnPhraseRecognized;
+        _keywordRecognizer.Dispose();
+
+        // Tell the KeywordRecognizer about our keywords.
+        _keywordRecognizer = new KeywordRecognizer(_keywords.ToArray());
+
+        // Register a callback for the KeywordRecognizer and start recognizing!
+        _keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
+
+        _keywordRecognizer.Start();
     }
 
     private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
