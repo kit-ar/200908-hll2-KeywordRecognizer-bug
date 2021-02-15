@@ -6,8 +6,15 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 
+#if ENABLE_WINMD_SUPPORT
+   using Windows.ApplicationModel;
+   using Windows.ApplicationModel.Core;
+#endif
+
 public class TestLogic : MonoBehaviour
 {
+    private bool _fNeedEngineReset = false;
+
     KeywordRecognizer _keywordRecognizer;
 
     List<string> _keywords = new List<string>() { "Test Voice Command", "Test Other" };
@@ -39,6 +46,26 @@ public class TestLogic : MonoBehaviour
     //    }
     //}
 
+#if ENABLE_WINMD_SUPPORT
+    private void OnResuming(object sender, object args)
+    {
+        _fNeedEngineReset = true;
+    }
+#endif
+
+    void Update()
+    {
+        if (_fNeedEngineReset)
+        {
+            UnityEngine.Debug.Log("Suspend / Resume Speech Engine Reset");
+
+            _fNeedEngineReset = false;
+
+            PhraseRecognitionSystem.Shutdown();
+            PhraseRecognitionSystem.Restart();
+        }
+    }
+
     private IEnumerator Test()
     {
         Debug.Log("Starting test in 2s...");
@@ -47,6 +74,10 @@ public class TestLogic : MonoBehaviour
         Debug.Log("Initializing KeywordRecognizer and registering voice commands: 'Test Voice Command' & 'Test Other'");
 
         PhraseRecognitionSystem.OnStatusChanged += StatusHandler;
+
+#if ENABLE_WINMD_SUPPORT
+        CoreApplication.Resuming += this.OnResuming;
+#endif
 
         // Tell the KeywordRecognizer about our keywords.
         _keywordRecognizer = new KeywordRecognizer(_keywords.ToArray());
